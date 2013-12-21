@@ -1,4 +1,5 @@
 # Dockerfile for TinyProxy, w/ whitelist.
+# Originally sourced from https://github.com/Painted-Fox/docker-tinyproxy/blob/master/Dockerfile
 
 FROM ubuntu:precise
 MAINTAINER thisguy
