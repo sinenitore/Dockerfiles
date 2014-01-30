@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+chown -R ghost:ghost /data/ghost
+exec sudo -E -u ghost npm start

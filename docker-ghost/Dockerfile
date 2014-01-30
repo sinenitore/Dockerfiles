@@ -1,31 +1,36 @@
-# Install and Run Ghost 0.3.3
+#
+# Ghost Dockerfile
+#
+# https://github.com/dockerfile/ghost
+#
 
-FROM ubuntu:precise
-MAINTAINER thisguy
+# Pull base image.
+FROM dockerfile/nodejs
 
-# Add sources and update
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y build-essential python-software-properties python g++ make software-properties-common sqlite3 libsqlite3-dev curl unzip
+# Install Ghost
+RUN useradd ghost
+RUN mkdir -p /opt/ghost
+RUN cd /opt/ghost && wget https://ghost.org/zip/ghost-0.4.0.zip -O ghost.zip
+RUN cd /opt/ghost && unzip ghost.zip && rm -f ghost.zip
+RUN cd /opt/ghost && npm install --production
 
-# Add node.js
-RUN add-apt-repository ppa:chris-lea/node.js && \
-	apt-get update && \
-	apt-get install -y nodejs
+# Mount volumes.
+VOLUME /data/ghost
 
-# Download Ghost
-RUN curl --location --progress -O https://ghost.org/zip/ghost-0.3.3.zip && \
-	unzip -uo ghost-0.3.3.zip -d /srv/ghost && \
-	rm ghost-0.3.3.zip
+# Define working directory.
+WORKDIR /opt/ghost
 
-# Install / Configure Ghost
-WORKDIR /srv/ghost
-RUN sed -i -e 's/127.0.0.1/0.0.0.0/g' config.example.js && \
-	npm config set strict-ssl false && \
-	npm config set registry "http://registry.npmjs.org/" && \
-	npm install --production
+# Add files.
+ADD run /usr/local/bin/run-ghost
+ADD config.js /opt/ghost/config.js
 
+RUN chown -R ghost:ghost /opt/ghost
+
+ENV NODE_ENV production
+ENV GHOST_URL http://my-ghost-blog.com
+
+# Expose ports.
 EXPOSE 2368
 
-ENTRYPOINT ["npm", "start"]
+# Define an entry point.
+CMD ["bash", "/usr/local/bin/run-ghost"]
