@@ -26,8 +26,9 @@ function bind_mount {
   #cUID=echo "$(id -u)"
   #cGID=echo "$(id -g)"
   sudo mount --bind $VID $MOUNT_PATH
+  #ln -s $VID $MOUNT_PATH
   if [[ $? -eq 0 ]]; then
-    echo "Successfully mounted $VID on $MOUNT_PATH."
+    echo "Successfully linked $VID to $MOUNT_PATH."
     sudo mount -o remount,uid=$UID,gid=$GID,rw $MOUNT_PATH
     if [[ $? -eq 0 ]]; then
       echo "Successfully remounted $MOUNT_PATH, with current user permissions."
@@ -35,7 +36,7 @@ function bind_mount {
       echo "Unable to remount $MOUNT_PATH. You will need to manually modify permissions."
     fi
   else
-    echo "Mount failed or is already mounted."
+    echo "Linking failed."
     show_progress
     exit 0
   fi

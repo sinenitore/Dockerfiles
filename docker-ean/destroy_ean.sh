@@ -8,20 +8,20 @@ function usage {
 
 function unmount_dir {
   um=$(sudo umount $mPoint)
-  if [ $um -eq 0 ]; then
+  if [ "$um" -eq 0 ]; then
     printf "Successfully unmounted volume.\n"
   else
     printf "Unable to unmount volume: $um\n"
-    exit 0
   fi
+  exit 0
 }
 
 function stop_rm {
   stopRes=$(sudo docker stop $container)
-  if [ $stopRes -eq $container ]; then
+  if [ "$stopRes" == $container ]; then
     printf "Stopped container successfully.\n"
     rmRes=$(sudo docker rm $container)
-    if [ $rmRes -eq $container ]; then
+    if [ "$rmRes" == $container ]; then
       printf "Removed container successfully.\n"
     else
       printf "Unable to remove container: $rmRes\n"

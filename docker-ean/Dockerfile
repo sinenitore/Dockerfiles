@@ -58,5 +58,5 @@ VOLUME ["/srv/express"]
 EXPOSE 3000
 
 
-ENTRYPOINT ["nodemon", "--watch routes", "--watch views"]  
+ENTRYPOINT ["nodemon", "--watch ./routes", "--watch ./views"]  
 CMD ["./app.js"]
