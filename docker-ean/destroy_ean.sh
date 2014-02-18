@@ -8,7 +8,7 @@ function usage {
 
 function unmount_dir {
   um=$(sudo umount $mPoint)
-  if [ "$um" -eq 0 ]; then
+  if [ $? -eq 0 ]; then
     printf "Successfully unmounted volume.\n"
   else
     printf "Unable to unmount volume: $um\n"

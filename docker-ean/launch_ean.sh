@@ -8,9 +8,16 @@ function print_usage {
 }
 
 function launch_instance {
+  echo "Image: $IMAGE"
+  echo "Name: $NAME"
+  echo "Mount point: $MOUNT_PATH"
+  echo "ID: $ID"
+  echo "VID: $VID"
+  echo "DO_INI: $DO_INIT"
+  echo "GIT_URL: $GIT_URL"
   echo "Command to execute:"
   echo "sudo docker run -d -p $PORT:3000 -name=\"$NAME\" $IMAGE"
-  ID=$(sudo docker run -d -p $PORT:3000 -name="$NAME" $IMAGE)
+  ID=$(sudo docker run -d -e GIT_URL=$GIT_URL -e DO_INIT=$DO_INIT -p $PORT:3000 -name="$NAME" $IMAGE)
   if [[ $? -ne 0 ]]; then
     echo "Error starting docker instance."
     echo $ID
@@ -48,8 +55,16 @@ function show_progress {
   echo "Mount point: $MOUNT_PATH"
   echo "ID: $ID"
   echo "VID: $VID"
+  echo "DO_INI: $DO_INIT"
+  echo "GIT_URL: $GIT_URL"
 }
-if [[ $# -lt 4 || $# -gt 5 ]]; then
+
+function test_request {
+  show_progress
+  exit 0
+}
+GIT_URL=""
+if [[ $# -lt 4 || $# -gt 6 ]]; then
   print_usage
   exit 0
 elif [[ $# -eq 4 ]]; then
@@ -57,19 +72,26 @@ elif [[ $# -eq 4 ]]; then
   NAME=$2
   MOUNT_PATH=$3
   PORT=$4
-    launch_instance
-    get_volume_id
-    bind_mount
+  DO_INIT=1
+  launch_instance
+  get_volume_id
+  bind_mount
 elif [[ $# -eq 5 ]]; then
   if [[ $5 == 'test' || $5 == 'TEST' || $5 == 'Test' ]]; then
-    IMAGE=$1
-    NAME=$2
-    MOUNT_PATH=$3
-    PORT=$4
-    show_progress
-    exit 0
+    test_request
+  fi
+  IMAGE=$1
+  NAME=$2
+  MOUNT_PATH=$3
+  PORT=$4
+  GIT_URL=$5
+  launch_instance
+  get_volume_id
+  bind_mount
+elif [[ $# -eq 6 ]]; then
+  if [[ $6 == 'test' || $6 == 'TEST' || $6 == 'Test' ]]; then
+    test_request
   else
     print_usage
   fi
 fi
-

@@ -32,22 +32,14 @@ RUN npm install -g nodemon
 # Create volume mount for working directory. Mount host dir here.
 RUN mkdir -p /srv/express
 
-# Create express app
-#RUN cd /srv/express
-#WORKDIR /srv/express
-#RUN express -s -c less ean_app
+# Set environment vairables or bash script run
+WORKDIR /srv/express
+ENV DO_INIT 0
+ENV WORK_DIR /srv/express
 
-# Add requirements and run install
-WORKDIR /srv/express/ean_app
-ENV gitrepo https://github.com/sinenitore/dyn-proxy.git
-#ADD package.json /srv/express/ean_app/package.json
-#ADD bowerrc /srv/express/ean_app/.bowerrc
-#ADD bower.json /srv/express/ean_app/bower.json
-RUN git init .
-RUN git remote add origin $gitrepo
-ENV app_ver 0.01
-RUN git pull $gitrepo
-RUN npm install
+ADD ean.init.sh /srv/
+RUN chmod +x /srv/ean.init.sh
+RUN chmod +x /srv/express
 
 # Set permissions for easy writing elsewhere
 RUN chmod -R g+rw /srv/express && chmod -R o+rw /srv/express
@@ -57,6 +49,4 @@ VOLUME ["/srv/express"]
 # Expose default express port
 EXPOSE 3000
 
-
-ENTRYPOINT ["nodemon", "--watch ./routes", "--watch ./views"]  
-CMD ["./app.js"]
+CMD ["/srv/ean.init.sh"]
