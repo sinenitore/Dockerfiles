@@ -1,8 +1,8 @@
 #!/bin/bash
 
-printf "Work Dir: $WORK_DIR"
-printf "DO_INIT: $DO_INIT"
-printf "GIT_URL: $GIT_URL"
+printf "Work Dir: $WORK_DIR\n"
+printf "DO_INIT: $DO_INIT\n"
+printf "GIT_URL: $GIT_URL\n"
 
 cd $WORK_DIR
 
@@ -15,10 +15,21 @@ if [[ $DO_INIT -eq 1 ]]; then
 else
   if [[ $GIT_URL ]]; then
     git clone $GIT_URL
-    git remote add origin $GIT_URL
+    printf "About to search for new DIR.\n"
+    for i in *; do 
+      printf "Loop variable: $i\n"
+      if [[ -d $i ]]; then
+        NEW_DIR=$i
+        break
+      fi
+    done
+    chmod +x $NEW_DIR
+    cd $NEW_DIR
+    printf '%s\n' "${PWD##*/}"
+  else
+    printf "DO_INIT is false but no GIT_URL was given, so nothing to do."
+    exit 0;
   fi
-  printf "DO_INIT is false but no GIT_URL was given, so nothing to do."
-  exit 0;
 fi
 
 # Run install
@@ -29,4 +40,4 @@ chmod g+rw -R /srv
 chmod o+rw -R /srv
 
 # Launch app using nodemon
-nodemon --watch ./routes --watch ./views ./app.js
+nodemon --watch ./routes --watch ./views --watch ./models ./app.js

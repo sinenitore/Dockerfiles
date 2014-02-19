@@ -22,6 +22,8 @@ RUN apt-get clean all
 # Append to $PATH variable.
 RUN echo '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bash_profile
 
+ENV VER_UPDATE 0.02
+
 # Install MEAN components
 RUN npm install -g jade
 RUN npm install -g express
